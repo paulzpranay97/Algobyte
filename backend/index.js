@@ -4,6 +4,7 @@ require('dotenv').config()
 
 const {Connection}=require('./config/db')
 const {userRouter}=require('./routes/user.routes')
+const {chatRouter}=require('./routes/chat.routes')
 
 const app=express();
 app.use(express.json());
@@ -14,6 +15,8 @@ app.get("/",(req,res)=>{
 })
 
 app.use('/user', userRouter);
+app.use('/chat', chatRouter);
+
 
 app.listen(process.env.PORT,async ()=>{
     try {
