@@ -39,8 +39,8 @@ export const signUpFetch = (value) => (dispatch) => {
         console.log(res);
     })
     .catch((err)=>{
-    dispatch(actionsingUpError(err.response.data.msg))
-        console.log(err.response.data.msg);
+    dispatch(actionsingUpError(err.response))
+        console.log(err);
     })
 }
 
@@ -52,3 +52,32 @@ export function capitalizeFirstLetter(string) {
   const capitalizedWords = words?.map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase());
   return capitalizedWords?.join(' ');
 }
+
+
+export const validatePassword = (password) => {
+    if (password.length < 8) {
+      return 'Password should be at least 8 characters long';
+    }
+  
+    if (!/\d/.test(password)) {
+      return 'Password should contain at least one digit';
+    }
+  
+    if (!/[a-z]/.test(password)) {
+      return 'Password should contain at least one lowercase letter';
+    }
+  
+    if (!/[A-Z]/.test(password)) {
+      return 'Password should contain at least one uppercase letter';
+    }
+  
+    if (!/[!@#$%^&*]/.test(password)) {
+      return 'Password should contain at least one special character (!@#$%^&*)';
+    }
+  
+    return ''; 
+  };
+  
+
+
+  

@@ -1,10 +1,11 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { BiError } from "react-icons/bi";
 import { AiOutlineEyeInvisible, AiFillEye } from "react-icons/ai";
 import { actionsingUpError } from "../Reducer/UserReducer/actionType";
-import { signUpFetch } from "../Reducer/UserReducer/action";
+import { signUpFetch, validatePassword } from "../Reducer/UserReducer/action";
+
 
 const SignUp = () => {
   const emailInput = useRef(null);
@@ -21,15 +22,13 @@ const SignUp = () => {
     password: "",
     confirmPassword: "",
     name: "",
-    isPromotion: false,
   });
 
   const userStore = useSelector((store) => store.UserReducer);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [isChecked, setIsChecked] = useState(false);
   const [eyeclose, seteyeMoment] = useState(false);
-  const [toastkey, setToastKey] = useState(true);
+  const [message, setMessage] = useState("");
 
   // will show the input element when click on element
   function showInput(e) {
@@ -57,20 +56,20 @@ const SignUp = () => {
   function blockInput(event) {
     if (event.target === backgroundRef.current && !form.email) {
       emailInput.current.style.display = "none";
-      emailbox.current.style.padding = "20px";
+      emailbox.current.style.padding = "0.75rem";
     }
     if (event.target === backgroundRef.current && !form.password) {
       passwordInput.current.style.display = "none";
-      passwordbox.current.style.padding = "20px";
+      passwordbox.current.style.padding = "0.75rem";
     }
     if (event.target === backgroundRef.current && !form.confirmPassword) {
       confirmPasswordInput.current.style.display = "none";
-      confirmPasswordbox.current.style.padding = "20px";
+      confirmPasswordbox.current.style.padding = "0.75rem";
     }
 
     if (event.target === backgroundRef.current && !form.name) {
       nameInput.current.style.display = "none";
-      namebox.current.style.padding = "20px";
+      namebox.current.style.padding = "0.75rem";
     }
   }
 
@@ -88,78 +87,71 @@ const SignUp = () => {
       : (passwordInput.current.type = "password");
   }
 
-  // handle promotion
-  const handleCheckboxChange = () => {
-    setIsChecked(!isChecked);
-    setForm({ ...form, isPromotion: !isChecked });
-  };
 
-  // Error toast
-  const showToast = () => {
-    // Add your custom toast implementation using Tailwind CSS classes here
-  };
 
-  // Success Toast
-  const showSuccessToast = () => {
-    // Add your custom toast implementation using Tailwind CSS classes here
-  };
 
-  if (userStore.isError && toastkey) {
-    showToast();
-    setToastKey(false);
-  }
 
   // SignUp function
   function handleSignUp() {
-    setToastKey(true);
+    setInterval(()=>{
+        setMessage("")
+    },5000)
+
+
     const { email, password, confirmPassword, name } = form;
+
     if (!email || !password || !confirmPassword || !name) {
-      dispatch(actionsingUpError("All fields are required"));
+    setMessage("All fields are required")
       return;
+    }
+
+    if(validatePassword(password)){
+      return  setMessage(validatePassword(password))
     }
 
     if (confirmPassword !== password) {
-      dispatch(actionsingUpError("Password does not match"));
-      return;
-    }
-
-    if (password.length < 8) {
-      dispatch(
-        actionsingUpError("Password should be at least 8 characters long")
-      );
+      setMessage("Password does not match")
       return;
     }
 
     dispatch(signUpFetch(form)).then((res) => {
       setForm({ email: "", password: "", confirmPassword: "", name: "" });
-      showSuccessToast();
     });
   }
 
+  useEffect(()=>{
+    
+  },[message])
+
+  
+
+
   return (
     <div>
+    <div className="p-4"><h1 className="text-lg font-bold text-red-600" >{message}</h1></div>
       <div
-        className="flex justify-center"
+        className="flex justify-center "
         onClick={blockInput}
         ref={backgroundRef}
         pt="100px"
       >
+        
         <div className="w-3/4 sm:w-2/3 md:w-1/2 lg:w-1/3 bg-gray-200 p-4 border-[1px] border-solid border-black">
           <div>
-            <h1 className="text-xs">Sign up and start learning</h1>
+            <h1 className="text-sm font-bold">Sign up and start learning</h1>
           </div>
           <div className="mt-25">
             {/* name */}
-            <div className="border-1 border-solid p-20" id="name" onClick={showInput} ref={namebox}>
+            <div className="border p-3 cursor-pointer mb-3 border-[1px] border-solid border-black" id="name" onClick={showInput} ref={namebox}>
               <div>
-                <h1 className="text-xs" id="name">
+                <h1 className="text-sm font-bold" id="name">
                   Name
                 </h1>
               </div>
               <div>
                 <input
                   type="text"
-                  className="hidden border-none focus:border-transparent focus:outline-none"
+                  className="hidden border-none p-3 focus:outline-none w-full"
                   ref={nameInput}
                   name="name"
                   value={form.name}
@@ -168,16 +160,16 @@ const SignUp = () => {
               </div>
             </div>
             {/* email */}
-            <div className="border-1 border-solid p-20" id="email" onClick={showInput} ref={emailbox}>
+            <div className="border p-3 cursor-pointer mb-3 border-[1px] border-solid border-black" id="email" onClick={showInput} ref={emailbox}>
               <div>
-                <h1 className="text-xs" id="email">
+                <h1 className="text-sm font-bold" id="email">
                   Email
                 </h1>
               </div>
               <div>
                 <input
                   type="text"
-                  className="hidden border-none focus:border-transparent focus:outline-none"
+                  className="hidden border-none p-3 focus:outline-none w-full"
                   ref={emailInput}
                   name="email"
                   value={form.email}
@@ -186,10 +178,10 @@ const SignUp = () => {
               </div>
             </div>
             {/* password */}
-            <div className="border-1 border-solid p-20" id="password" onClick={showInput} ref={passwordbox}>
+            <div className="border p-3 cursor-pointer mb-3 border-[1px] border-solid border-black" id="password" onClick={showInput} ref={passwordbox}>
               <div className="flex justify-between">
                 <div onClick={showInput} className="w-full">
-                  <h1 className="text-xs" id="password">
+                  <h1 className="text-sm font-bold" id="password">
                     Password
                   </h1>
                 </div>
@@ -204,7 +196,7 @@ const SignUp = () => {
               <div>
                 <input
                   type="password"
-                  className="hidden border-none focus:border-transparent focus:outline-none"
+                  className="hidden border-none p-3 focus:outline-none w-full"
                   ref={passwordInput}
                   name="password"
                   value={form.password}
@@ -214,20 +206,20 @@ const SignUp = () => {
             </div>
             {/* confirm password */}
             <div
-              className="border-1 border-solid p-20"
+              className="border p-3 cursor-pointer mb-3 border-[1px] border-solid border-black"
               id="confirmPassword"
               onClick={showInput}
               ref={confirmPasswordbox}
             >
               <div>
-                <h1 className="text-xs" id="confirmPassword">
+                <h1 className="text-sm font-bold" id="confirmPassword">
                   Confirm Password
                 </h1>
               </div>
               <div>
                 <input
                   type="password"
-                  className="hidden border-none focus:border-transparent focus:outline-none"
+                  className="hidden border-none p-3 focus:outline-none w-full"
                   ref={confirmPasswordInput}
                   name="confirmPassword"
                   value={form.confirmPassword}
@@ -236,26 +228,10 @@ const SignUp = () => {
               </div>
             </div>
 
-            <div className="flex">
-              <div className="inline p-15">
-                <input
-                  type="checkbox"
-                  checked={isChecked}
-                  onChange={handleCheckboxChange}
-                />
-              </div>
-              <div className="inline">
-                <p className="p-10">
-                  Send me special offers, personalized recommendations, and
-                  learning tips.
-                </p>
-              </div>
-            </div>
-
             {/* button */}
             <div className="mt-15">
               <button
-                className="w-full text-white bg-blue-500 hover:bg-blue-600 rounded-0 text-center"
+                className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 flex items-center justify-center"
                 onClick={handleSignUp}
               >
                 <h2 className="text-sm">
@@ -287,6 +263,7 @@ const SignUp = () => {
           </div>
         </div>
       </div>
+      <Link className="text-blue-500 font-bold text-md " to="/login">LogIn</Link>
     </div>
   );
 };

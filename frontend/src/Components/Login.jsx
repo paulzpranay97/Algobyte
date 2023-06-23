@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
  import { useDispatch, useSelector } from "react-redux";
 //import { loginFetch } from "../Redux/UserReducer/action";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 //import GoogleAuth from "../Pages/GoogleAuth";
 //import { FcGoogle } from "react-icons/fc";
 import { DiApple } from "react-icons/di";
@@ -40,11 +40,11 @@ const Login = () => {
   function blockInput(event) {
     if (event.target === backgroundRef.current && !form.email) {
       emailInput.current.style.display = "none";
-      emailbox.current.style.padding = "20px";
+      emailbox.current.style.padding = "0.75rem";
     }
     if (event.target === backgroundRef.current && !form.password) {
       passwordInput.current.style.display = "none";
-      passwordbox.current.style.padding = "20px";
+      passwordbox.current.style.padding = "0.75rem";
     }
   }
 
@@ -180,6 +180,7 @@ const Login = () => {
           </div>
         </div>
       </div>
+      <Link className="text-blue-500 font-bold text-md " to="/signup">SignUp</Link>
     </div>
   );
 };
