@@ -74,7 +74,17 @@ userRouter.post('/login', async (req, res) => {
 
 
 userRouter.post('/logout', async (req, res) => {
-    res.json('logged out')
+    client.get("token").then((result) => {
+        console.log(result); // Prints "value"
+        const decoded = jwt.verify(result,process.env.JWT_secret)
+   
+    
+        if(!decoded){
+              res.status(400).send({"msg":"Access not granted"})
+        }
+        client.mset("blackList",decoded.userid)
+        res.status(200).send("Logged Out")
+      });
 })
 
 module.exports = {
